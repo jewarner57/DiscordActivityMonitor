@@ -34,7 +34,7 @@ client.on('message', message => {
       })
 
 
-    message.channel.send(`Alert role is now ${alertRole}`);
+    message.channel.send(`Created the role ${alertRole}. Users with this role will recieve voice activity pings.`);
   }
 
   // on ~sethome command
