@@ -18,7 +18,21 @@ client.on('message', message => {
   if (message.content.toLowerCase().substring(0, 9) === '~setrole ') {
     // Set the new @ role
     let alertRole = message.content.substring(9)
-    gc.createOrUpdateGuildInfo(message, { alertrole: alertRole })
+
+    message.guild.roles.create({
+      data: {
+        name: alertRole,
+        color: 'BLUE',
+      },
+      reason: 'This role recieves voice activity pings.',
+    })
+      .then((role) => {
+        gc.createOrUpdateGuildInfo(message, { alertrole: role.id })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+
 
     message.channel.send(`Alert role is now ${alertRole}`);
   }
@@ -51,29 +65,32 @@ client.on("voiceStateUpdate", function (oldState, newState) {
 
     Guild.findOne({ guildID: newState.guild.id })
       .then((guild) => {
-        let alertrole = guild.alertrole || '@here'
-        let homechannel = guild.homechannel
+        let alertrole = guild.alertrole || 'here'
+        client.channels.fetch(guild.homechannel)
+          .then((homechannel) => {
+            let messageValue = `<@&${alertrole}> ... ${name} is all alone in: ${newState.channel.name}. Join and say hello.`
 
-        let messageValue = `@${alertrole} ... ${name} is all alone in: ${newState.channel.name}. Join and say hello.`
-
-        if (homechannel !== undefined) {
-          try {
-            homechannel.send(messageValue)
-          }
-          catch (err) {
+            if (homechannel !== undefined) {
+              try {
+                homechannel.send(messageValue)
+              }
+              catch (err) {
+                console.log(err)
+              }
+            }
+            else {
+              console.log(messageValue)
+              console.log("Message sent to default channel because home channel is not defined")
+            }
+          })
+          .catch((err) => {
             console.log(err)
-          }
-        }
-        else {
-          console.log(messageValue)
-          console.log("Message sent to default channel because home channel is not defined")
-        }
+          })
       })
   }
 });
 
 function getMembers(channelState) {
-  console.log(channelState.channelID)
   if (channelState.channel === undefined || channelState.channel === null) {
     console.log('channelState.channel is not defined or null')
     return 0;
