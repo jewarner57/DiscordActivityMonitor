@@ -55,7 +55,7 @@ function getMembers(channelState) {
 }
 
 client.on('voiceStateUpdate', (oldState, newState) => {
-  console.log('Voice state changed');
+  console.log(`Voice state changed - ${new Date()}`);
   const oldStateMembers = getMembers(oldState);
   const newStateMembers = getMembers(newState);
 
