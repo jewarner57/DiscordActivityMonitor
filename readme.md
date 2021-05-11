@@ -22,7 +22,7 @@
 ### How to use?
 * There are 2 commands to get started with the voice activity monitor.
   1. ```~sethome```: Send this command in the channel that you want the bot to send messages in
-  2. ```~setrole <rolename>```: Send this command to tell the bot to create a named role. This is the role that the bot will @ mention whenever it detects voice activity. Users can add this role to themselves to recieve voice activity pings. 
+  2. ```~setrole <rolename>```: Send this command to tell the bot to create a named role. This is the role that the bot will @ mention whenever it detects voice activity. Users can add this role to themselves to recieve voice activity pings. The bot will ping @here by default if no role has been set.
 
 <br>
 

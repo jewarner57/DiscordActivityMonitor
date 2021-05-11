@@ -72,7 +72,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         const alertrole = guild.alertrole ? `<@&${guild.alertrole}>` : '@here'
         client.channels.fetch(guild.homechannel)
           .then((homechannel) => {
-            const messageValue = `${alertrole} ... ${name} is all alone in: ${newState.channel.name}. Join and say hello.`
+            const messageValue = `${alertrole} ... ${name} is all alone in **${newState.channel.name}**. Join and say hello.`
 
             if (homechannel !== undefined) {
               try {
