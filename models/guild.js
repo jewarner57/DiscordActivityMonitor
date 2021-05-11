@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 const GuildSchema = new Schema({
   guildID: { type: String, required: true },
@@ -7,4 +8,4 @@ const GuildSchema = new Schema({
   alertrole: { type: String, required: false },
 }, { timestamps: { createdAt: 'created_at' } });
 
-module.exports = mongoose.model("Guild", GuildSchema);
+module.exports = mongoose.model('Guild', GuildSchema)
