@@ -1,7 +1,5 @@
 const { setRole, setHome, graphActivity } = require('./commands')
 
-console.log(setRole, setHome, graphActivity)
-
 function onClientMessage(message) {
     // if the message isnt meant for this bot then ignore it
     if (message.content.substring(0, 1) !== '~') {

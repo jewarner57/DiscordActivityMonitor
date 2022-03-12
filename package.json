@@ -19,6 +19,8 @@
   "author": "Jonathan Warner",
   "license": "MIT",
   "dependencies": {
+    "canvas": "^2.9.0",
+    "d3-node": "^2.2.3",
     "discord.js": "^12.2.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.26.0",
@@ -26,6 +28,7 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "mongoose": "^5.12.8",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "sharp": "^0.30.2"
   }
 }
