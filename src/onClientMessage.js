@@ -1,35 +1,30 @@
-const gc = require('./controllers/guild')
+const { setRole, setHome, graphActivity } = require('./commands')
+
+console.log(setRole, setHome, graphActivity)
 
 function onClientMessage(message) {
-    // on ~setrole command
-    if (message.content.toLowerCase().substring(0, 9) === '~setrole ') {
-        // Set the new @ role
-        const alertRole = message.content.substring(9)
-
-        message.guild.roles.create({
-            data: {
-                name: alertRole,
-                color: 'BLUE',
-            },
-            reason: 'This role recieves voice activity pings.',
-        })
-            .then((role) => {
-                gc.createOrUpdateGuildInfo(message, { alertrole: role.id })
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-
-        message.channel.send(`Created the role ${alertRole}. Users with this role will recieve voice activity pings.`);
+    // if the message isnt meant for this bot then ignore it
+    if (message.content.substring(0, 1) !== '~') {
+        return
     }
 
-    // on ~sethome command
-    if (message.content.toLowerCase() === '~sethome') {
-        // Set the new home channel
-        const homeChannel = message.channel.id
-        gc.createOrUpdateGuildInfo(message, { homechannel: homeChannel })
+    const commandArguments = message.content.toLowerCase().split(" ")
+    if (commandArguments.length < 1) {
+        message.channel.send('Command Not Found.')
+    }
 
-        message.channel.send('This bein me home now.');
+    switch (commandArguments[0]) {
+        case '~setrole':
+            setRole(message)
+            break;
+        case '~sethome':
+            setHome(message)
+            break;
+        case '~graph-activity':
+            graphActivity(message)
+            break;
+        default:
+            message.channel.send('Command Not Found.')
     }
 }
 
