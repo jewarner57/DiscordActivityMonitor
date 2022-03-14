@@ -4,7 +4,7 @@ function drawGraph(data, startDateString, endDateString) {
     const d3n = new D3Node()
     const d3 = d3n.d3
 
-    const lineData = data
+    const lineData = parseActivityData(data)
     
     const margin = { top: 60, right: 50, bottom: 50, left: 50 };
     let height = 600
@@ -23,24 +23,24 @@ function drawGraph(data, startDateString, endDateString) {
     width = width - margin.left - margin.right;
     height = height - margin.top - margin.bottom;
 
-
-    // NEED A WAY TO DEAL WITH PEOPLE BEING IN MULTIPLE CHANNELS AT ONCE
-
-    // set the ranges
+    // Create X range
     const x = d3.scaleTime().range([0, width]);
     x.domain(d3.extent(lineData, function (d) { return d.created_at; }));
 
+    // Create Y range
     const y = d3.scaleLinear().range([height, 0]);
     y.domain([
-      d3.min(lineData, function (d) { return d.userIDs.length; }), 
-      d3.max(lineData, function (d) { return d.userIDs.length; })
+      d3.min(lineData, function (d) { return d.count; }), 
+      d3.max(lineData, function (d) { return d.count; })
     ]);
 
+    // Calculate line
     const valueline = d3.line()
       .x(function (d) { return x(d.created_at); })
-      .y(function (d) { return y(d.userIDs.length); })
+      .y(function (d) { return y(d.count); })
       .curve(d3.curveLinear);
 
+    // Draw graph line
     graphArea.append("path")
       .data([lineData])
       .attr("class", "line")
@@ -49,7 +49,8 @@ function drawGraph(data, startDateString, endDateString) {
       .attr('stroke', '#6495ED')
       .attr('fill', 'none');
 
-    var xAxis_woy = d3.axisBottom(x).tickFormat(d3.timeFormat('%H:%M:%S'));
+    // Draw X axis
+    const xAxis_woy = d3.axisBottom(x).tickFormat(d3.timeFormat('%H:%M:%S'));
 
     graphArea.append("g")
       .attr("class", "x axis")
@@ -58,25 +59,26 @@ function drawGraph(data, startDateString, endDateString) {
 
     graphArea.append("g").call(d3.axisLeft(y));
 
+    // Draw data points on line
     graphArea.selectAll(".dot")
       .data(lineData)
       .enter()
-      .append("circle") // Uses the enter().append() method
-      .attr("class", "dot") // Assign a class for styling
+      .append("circle")
       .attr("cx", function (d) { return x(d.created_at) })
-      .attr("cy", function (d) { return y(d.userIDs.length) })
+      .attr("cy", function (d) { return y(d.count) })
       .attr("r", 3);  
 
-    graphArea.selectAll(".text")
-      .data(lineData)
-      .enter()
-      .append("text") // Uses the enter().append() method
-      .attr("class", "label") // Assign a class for styling
-      .attr("x", function (d, i) { return x(d.created_at) })
-      .attr("y", function (d) { return y(d.userIDs.length) })
-      .attr("dy", "-7")
-      .text(function (d) { return d.userIDs.length; });
+    // Draw values on each point
+    // graphArea.selectAll(".text")
+    //   .data(lineData)
+    //   .enter()
+    //   .append("text")
+    //   .attr("x", function (d, i) { return x(d.created_at) })
+    //   .attr("y", function (d) { return y(d.count) })
+    //   .attr("dy", "-7")
+    //   .text(function (d) { return d.count; });
 
+    // Draw title
     svg.append('text')
       .attr('x', 30)
       .attr('y', 30) 
@@ -86,5 +88,44 @@ function drawGraph(data, startDateString, endDateString) {
     return d3n.svgString()
 
 } 
+
+function parseActivityData(data) {
+  // Keep track of how many people are active in VC across multiple channels 
+  const channelObj = {}
+  const resultData = []
+
+  for(let activity of data) {
+    // Get the channel state from the activity
+    channelObj[activity.channelID] = {
+      userIDs: activity.userIDs,
+      count: activity.userIDs.length
+    }
+
+    // Get active users across all channels
+    let activeUsers = new Set()
+    for (const channelData of Object.values(channelObj)) {
+      for(const user of channelData.userIDs) {
+        activeUsers.add(user)
+      }
+    }
+
+    const prevCount = resultData[resultData.length - 1]?.count
+    if (prevCount !== activeUsers.size && !isNaN(prevCount)) {
+      resultData.push({
+        count: prevCount,
+        userIDs: [],
+        created_at: activity.created_at
+      })  
+    }
+
+    resultData.push({
+      count: activeUsers.size, 
+      userIDs: Array.from(activeUsers),
+      created_at: activity.created_at  
+    })
+  }
+
+  return resultData
+}
 
 module.exports = drawGraph
