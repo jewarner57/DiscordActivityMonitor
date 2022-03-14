@@ -2,6 +2,7 @@ const Activity = require('../models/activity');
 const drawGraph = require('../graph-generator/make-graph.js')
 const svgToPng = require('../graph-generator/svg-to-png.js')
 const { MessageAttachment } = require('discord.js')
+const ED = require('@jewarner57/easydate')
 
 async function graphActivity(message) {
     const dateRange = message.content.substring(15).split(" to ")
@@ -22,7 +23,9 @@ async function graphActivity(message) {
     }).sort({ "created_at": 1 })
 
     if (activityData.length < 1) {
-        message.channel.send("No voice activity data was found for that date range.")
+        const startDateFormatString = new ED(startDate).format('%M-%D-%Y')
+        const endDateFormatString = new ED(endDate).format('%M-%D-%Y')
+        message.channel.send(`No voice activity data was found in date range: (${startDateFormatString} -> ${endDateFormatString})`)
         return
     }
 
