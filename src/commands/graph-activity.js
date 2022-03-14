@@ -1,8 +1,8 @@
 const Activity = require('../models/activity');
 const drawGraph = require('../graph-generator/make-graph.js')
-const svgToPng = require('../graph-generator/svg-to-png.js')
 const { MessageAttachment } = require('discord.js')
 const ED = require('@jewarner57/easydate')
+var svg2img = require('svg2img');
 
 async function graphActivity(message) {
     const dateRange = message.content.substring(15).split(" to ")
@@ -25,7 +25,10 @@ async function graphActivity(message) {
     if (activityData.length < 1) {
         const startDateFormatString = new ED(startDate).format('%M-%D-%Y')
         const endDateFormatString = new ED(endDate).format('%M-%D-%Y')
-        message.channel.send(`No voice activity data was found in date range: (${startDateFormatString} -> ${endDateFormatString})`)
+
+        message.channel.send(`
+        No voice activity data was found in date range: (${startDateFormatString} -> ${endDateFormatString})
+        `)
         return
     }
 
@@ -34,17 +37,15 @@ async function graphActivity(message) {
 
     // pass the data to D3 to be processed into an SVG
     message.channel.send(`Drawing graph...`)
-    const imageBuffer = drawGraph(activityData)
-
-    // Put the D3 svg into a JS Canvas
-    // Convert the JS Canvas object to a PNG
-    // const pngBuffer = svgToPng(svg, 100, 200)
-
-    // Send the PNG as an attachment to a success message
-    const file = new MessageAttachment(imageBuffer);
-
-    message.channel.send('Graph Complete:')
-    message.channel.send(file)
+    const svgString = drawGraph(activityData)
+    
+    // Convert the svg string object to a buffer 
+    svg2img(svgString, function (error, buffer) {
+      // Send the buffer as an attachment to a success message 
+      const file = new MessageAttachment(buffer);
+      message.channel.send('Graph Complete:')
+      message.channel.send(file)
+    });
 }
 
 function foundErrorsInDates(message, startDate, endDate) {
