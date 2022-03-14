@@ -18,8 +18,11 @@ function onClientMessage(message) {
         case '~sethome':
             setHome(message)
             break;
-        case '~graph-activity':
-            graphActivity(message)
+        case '~graph-server-activity':
+            graphActivity(message, 'server-activity')
+            break;
+        case '~graph-user-activity':
+            graphActivity(message, 'user-activity')
             break;
         default:
             message.channel.send('Command Not Found.')

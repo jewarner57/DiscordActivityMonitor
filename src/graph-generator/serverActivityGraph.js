@@ -1,6 +1,6 @@
 const D3Node = require('d3-node')
 
-function drawGraph(data, startDateString, endDateString) {
+function serverActivityGraph(data, startDateString, endDateString) {
     const d3n = new D3Node()
     const d3 = d3n.d3
 
@@ -50,7 +50,7 @@ function drawGraph(data, startDateString, endDateString) {
       .attr('fill', 'none');
 
     // Draw X axis
-    const xAxis_woy = d3.axisBottom(x).tickFormat(d3.timeFormat('%H:%M:%S'));
+    const xAxis_woy = d3.axisBottom(x).tickFormat(d3.timeFormat('%H:%M:%S')).ticks(5);
 
     graphArea.append("g")
       .attr("class", "x axis")
@@ -128,4 +128,4 @@ function parseActivityData(data) {
   return resultData
 }
 
-module.exports = drawGraph
+module.exports = serverActivityGraph

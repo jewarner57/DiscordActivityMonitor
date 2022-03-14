@@ -1,10 +1,11 @@
 const Activity = require('../models/activity');
-const drawGraph = require('../graph-generator/make-graph.js')
+const serverActivityGraph = require('../graph-generator/serverActivityGraph.js')
+const userActivityGraph = require('../graph-generator/userActivityGraph.js')
 const { MessageAttachment } = require('discord.js')
 const ED = require('@jewarner57/easydate')
 var svg2img = require('svg2img');
 
-async function graphActivity(message) {
+async function graphActivity(message, graphType) {
     const dateRange = message.content.substring(15).split(" to ")
     const startDate = new Date(dateRange[0])
     const endDate = new Date(dateRange[1])
@@ -37,7 +38,14 @@ async function graphActivity(message) {
 
     // pass the data to D3 to be processed into an SVG
     message.channel.send(`Drawing graph...`)
-    const svgString = drawGraph(activityData, startDateFormatString, endDateFormatString)
+
+    let svgString = ""
+    if (graphType === "server-activity") {
+      svgString = serverActivityGraph(activityData, startDateFormatString, endDateFormatString)
+    }
+    else {
+      svgString = userActivityGraph(activityData, startDateFormatString, endDateFormatString) 
+    }
     
     // Convert the svg string object to a buffer 
     svg2img(svgString, function (error, buffer) {
