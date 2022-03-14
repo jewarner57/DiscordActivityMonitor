@@ -22,10 +22,10 @@ async function graphActivity(message) {
         }
     }).sort({ "created_at": 1 })
 
-    if (activityData.length < 1) {
-        const startDateFormatString = new ED(startDate).format('%M-%D-%Y')
-        const endDateFormatString = new ED(endDate).format('%M-%D-%Y')
 
+    const startDateFormatString = new ED(startDate).format('%M-%D-%Y')
+    const endDateFormatString = new ED(endDate).format('%M-%D-%Y')
+    if (activityData.length < 1) {
         message.channel.send(`
         No voice activity data was found in date range: (${startDateFormatString} -> ${endDateFormatString})
         `)
@@ -37,7 +37,7 @@ async function graphActivity(message) {
 
     // pass the data to D3 to be processed into an SVG
     message.channel.send(`Drawing graph...`)
-    const svgString = drawGraph(activityData)
+    const svgString = drawGraph(activityData, startDateFormatString, endDateFormatString)
     
     // Convert the svg string object to a buffer 
     svg2img(svgString, function (error, buffer) {
