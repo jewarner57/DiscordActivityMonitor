@@ -44,7 +44,7 @@ async function graphActivity(message, graphType) {
       svgString = serverActivityGraph(activityData, startDateFormatString, endDateFormatString)
     }
     else {
-      svgString = userActivityGraph(activityData, startDateFormatString, endDateFormatString) 
+      svgString = await userActivityGraph(activityData, startDateFormatString, endDateFormatString) 
     }
     
     // Convert the svg string object to a buffer 

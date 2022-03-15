@@ -86,7 +86,6 @@ function serverActivityGraph(data, startDateString, endDateString) {
       .text(`Server activity from: ${startDateString} to ${endDateString}`); 
 
     return d3n.svgString()
-
 } 
 
 function parseActivityData(data) {

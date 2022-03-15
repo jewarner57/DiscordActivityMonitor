@@ -12,8 +12,17 @@ function onVoiceStateUpdate(client, oldState, newState) {
         sendVoiceStatePing(client, newState)
     }
 
-    // save the current users to a new activity
-    trackVoiceActivity(oldState, newState, oldStateMembers, newStateMembers)
+    // only save new activity if the voice state update was
+    // triggered by someone leaving or joining the call
+    // muting and unmuting also triggers voice state update
+    // and we don't want that creating spam in our db
+    if (
+      (oldStateMembers.length !== newStateMembers.length) || 
+      (oldStateMembers.length === 0 && newStateMembers.length === 0)
+      ) {
+      console.log(`Activity Update Tracked: ${oldStateMembers.length} users -> ${newStateMembers.length} users`)
+      trackVoiceActivity(oldState, newState, oldStateMembers, newStateMembers)
+    }
 }
 
 function trackVoiceActivity(oldState, newState, oldStateMembers, newStateMembers) {

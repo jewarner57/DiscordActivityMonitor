@@ -6,8 +6,6 @@ async function userActivityGraph(data, tartDateString, endDateString) {
 
   const circleData = parseUserActivity(data)
 
-  console.log(circleData)
-
   const margin = { top: 60, right: 50, bottom: 50, left: 50 };
   let height = 600
   let width = 600
@@ -40,7 +38,7 @@ async function userActivityGraph(data, tartDateString, endDateString) {
       r: sizeScale(user.count),
       color: `hsl(208, ${colorScale(user.count)}%, 60%)`,
       text: user.key,
-      value: user.count
+      value: user.count / 1000 / 60 / 60 // <- conversion to get hours from ms
     }
   })
 
