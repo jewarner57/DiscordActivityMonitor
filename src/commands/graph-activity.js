@@ -24,8 +24,8 @@ async function graphActivity(message, graphType) {
     }).sort({ "created_at": 1 })
 
 
-    const startDateFormatString = new ED(startDate).format('%M-%D-%Y')
-    const endDateFormatString = new ED(endDate).format('%M-%D-%Y')
+    const startDateFormatString = new ED(startDate).format('%W, %B %d, %h:%I')
+    const endDateFormatString = new ED(endDate).format('%W, %B %d, %h:%I')
     if (activityData.length < 1) {
         message.channel.send(`
         No voice activity data was found in date range: (${startDateFormatString} -> ${endDateFormatString})
@@ -41,10 +41,10 @@ async function graphActivity(message, graphType) {
 
     let svgString = ""
     if (graphType === "server-activity") {
-      svgString = serverActivityGraph(activityData, startDateFormatString, endDateFormatString)
+      svgString = serverActivityGraph(activityData, startDate, endDate)
     }
     else {
-      svgString = await userActivityGraph(activityData, startDateFormatString, endDateFormatString, message) 
+      svgString = await userActivityGraph(activityData, startDate, endDate, message) 
     }
     
     // Convert the svg string object to a buffer 

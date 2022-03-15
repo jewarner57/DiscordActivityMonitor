@@ -1,14 +1,15 @@
 const D3Node = require('d3-node')
+const ED = require('@jewarner57/easydate')
 
-function serverActivityGraph(data, startDateString, endDateString) {
+function serverActivityGraph(data, startDate, endDate) {
     const d3n = new D3Node()
     const d3 = d3n.d3
 
-    const lineData = parseActivityData(data)
+    const lineData = parseActivityData(data, startDate, endDate)
     
-    const margin = { top: 60, right: 50, bottom: 50, left: 50 };
+    const margin = { top: 60, right: 75, bottom: 50, left: 75 };
     let height = 600
-    let width = 600
+    let width = 1000
 
     const svg = d3n.createSVG(width, height)
     // create background    
@@ -50,7 +51,7 @@ function serverActivityGraph(data, startDateString, endDateString) {
       .attr('fill', 'none');
 
     // Draw X axis
-    const xAxis_woy = d3.axisBottom(x).tickFormat(d3.timeFormat('%H:%M:%S')).ticks(5);
+    const xAxis_woy = d3.axisBottom(x).tickFormat(d3.timeFormat('%a, %b %e (%H:%M)')).ticks(5);
 
     graphArea.append("g")
       .attr("class", "x axis")
@@ -78,20 +79,33 @@ function serverActivityGraph(data, startDateString, endDateString) {
     //   .attr("dy", "-7")
     //   .text(function (d) { return d.count; });
 
+    // format dates 
+    const startDateFormatString = new ED(startDate).format('(%W, %B %d, %h:%I)')
+    const endDateFormatString = new ED(endDate).format('(%W, %B %d, %h:%I)')
+
     // Draw title
     svg.append('text')
-      .attr('x', 30)
+      .attr("x", ((width + margin.right + margin.left) / 2))
+      .attr("text-anchor", "middle")
       .attr('y', 30) 
       .attr('font-size', '18px')
-      .text(`Server activity from: ${startDateString} to ${endDateString}`); 
+      .text(`Server activity from: ${startDateFormatString} to ${endDateFormatString}`); 
 
     return d3n.svgString()
 } 
 
-function parseActivityData(data) {
+function parseActivityData(data, startDate, endDate) {
   // Keep track of how many people are active in VC across multiple channels 
   const channelObj = {}
   const resultData = []
+
+  // add an empty point at the start date
+  // so we keep the desired domain of the graph
+  resultData.push({
+    count: 0,
+    userIDs: [],
+    created_at: startDate
+  }) 
 
   for(let activity of data) {
     // Get the channel state from the activity
@@ -123,6 +137,14 @@ function parseActivityData(data) {
       created_at: activity.created_at  
     })
   }
+
+  // add an empty point at the end date
+  // so we keep the desired domain of the graph
+  resultData.push({
+    count: 0,
+    userIDs: [],
+    created_at: endDate
+  }) 
 
   return resultData
 }

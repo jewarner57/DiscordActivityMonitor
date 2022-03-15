@@ -1,6 +1,7 @@
 const D3Node = require('d3-node')
+const ED = require('@jewarner57/easydate')
 
-async function userActivityGraph(data, startDateString, endDateString, message) {
+async function userActivityGraph(data, startDate, endDate, message) {
   const d3n = new D3Node()
   const d3 = d3n.d3
 
@@ -90,14 +91,18 @@ async function userActivityGraph(data, startDateString, endDateString, message) 
     .attr('x', d => d.x)
     .attr('y', d => (d.y + d.r / 4) + d.r / 4)
 
+  // format dates 
+  const startDateFormatString = new ED(startDate).format('(%W, %B %d, %h:%I)')
+  const endDateFormatString = new ED(endDate).format('(%W, %B %d, %h:%I)')
+
   // create the graph title
   svg.append("text")
-    .attr("x", (width / 2))
+    .attr("x", ((width + margin.right + margin.left) / 2))
     .attr("y", 45)
     .attr("text-anchor", "middle")
     .style("font-size", "20px")
     .style('font-family', "'Roboto', sans-serif")
-    .text(`Server User Activity for: ${startDateString} to ${endDateString}`)
+    .text(`Server User Activity for: ${startDateFormatString} to ${endDateFormatString}`)
 
   return d3n.svgString()
 }
