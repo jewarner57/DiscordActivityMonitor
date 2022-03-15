@@ -1,14 +1,14 @@
 const D3Node = require('d3-node')
 
-async function userActivityGraph(data, tartDateString, endDateString) {
+async function userActivityGraph(data, startDateString, endDateString, message) {
   const d3n = new D3Node()
   const d3 = d3n.d3
 
-  const circleData = parseUserActivity(data)
+  const circleData = await parseUserActivity(data, message)
 
-  const margin = { top: 60, right: 50, bottom: 50, left: 50 };
-  let height = 600
-  let width = 600
+  const margin = { top: 60, right: 30, bottom: 20, left: 30 };
+  let height = 800
+  let width = 800
 
   const svg = d3n.createSVG(width, height)
 
@@ -37,7 +37,7 @@ async function userActivityGraph(data, tartDateString, endDateString) {
     return {
       r: sizeScale(user.count),
       color: `hsl(208, ${colorScale(user.count)}%, 60%)`,
-      text: user.key,
+      text: user.username,
       value: user.count / 1000 / 60 / 60 // <- conversion to get hours from ms
     }
   })
@@ -47,7 +47,7 @@ async function userActivityGraph(data, tartDateString, endDateString) {
   d3.packSiblings(circles);
 
   const users = graphArea.append('g')
-    .attr('transform', `translate(${width / 2},${height / 2.5})`)
+    .attr('transform', `translate(${width / 2},${height / 2})`)
 
   // user circles
   users
@@ -85,24 +85,24 @@ async function userActivityGraph(data, tartDateString, endDateString) {
     .append('text')
     .style('font-family', "'Roboto', sans-serif")
     .style('font-size', d => d.r / 3)
-    .text(d => d.value)
+    .text(d => `${Math.floor(d.value * 10) / 10} hrs`)
     .attr('text-anchor', 'middle')
     .attr('x', d => d.x)
     .attr('y', d => (d.y + d.r / 4) + d.r / 4)
 
   // create the graph title
-  graphArea.append("text")
+  svg.append("text")
     .attr("x", (width / 2))
     .attr("y", 45)
     .attr("text-anchor", "middle")
     .style("font-size", "20px")
     .style('font-family', "'Roboto', sans-serif")
-    .text("Ranked User activity for ")
+    .text(`Server User Activity for: ${startDateString} to ${endDateString}`)
 
   return d3n.svgString()
 }
 
-function parseUserActivity(data) {
+async function parseUserActivity(data, message) {
   // Keep track of how many people are active in VC across multiple channels 
   const userObj = {}
   let prevActivity = data[0]
@@ -124,7 +124,11 @@ function parseUserActivity(data) {
     for (const userID of activity.userIDs) {
       // mark users as active
       if (!userObj[userID]) {
-        userObj[userID] = { count: 0, key: userID }
+        // Get the username from an ID
+        // members.fetch(id) checks for cached users first before
+        // making an api request
+        const { user: { username } } = await message.guild.members.fetch(userID)
+        userObj[userID] = { count: 0, key: userID, username }
       }
       userObj[userID].active = true 
     }
