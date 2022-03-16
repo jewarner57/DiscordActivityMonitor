@@ -31,8 +31,8 @@
 * ```~graph-activity <Graph> <DateRange>```
   * Creates a visualization of server voice chat activity from the given date range and sends it back as an image.
   * Params:
-    * ```\<Graph>```: This should be one of the following avaliable visalizations: "users", "server"
-    * ```\<DateRange>```: This should be either a date range flag or two dates seperated by "to"
+    * ```<Graph>```: This should be one of the following avaliable visalizations: "users", "server"
+    * ```<DateRange>```: This should be either a date range flag or two dates seperated by "to"
       * Avaliable date range flags are:
         * past-minute
         * past-hour
