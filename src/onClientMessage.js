@@ -14,6 +14,8 @@ function onClientMessage(message) {
     }
 
     switch (commandArguments[0]) {
+        case '~help':
+            break;
         case '~setrole':
             setRole(message)
             break;
@@ -32,7 +34,7 @@ function parseGraphCommand(message, commandArguments) {
   const paramString = commandArguments.slice(2).join(' ')
   if (commandArguments.length < 2) {
     return message.channel.send(
-      'Invalid Command Format. ~graph-activity takes one or more arguments. Use ~help for examples.'
+      'Invalid Command Format: ~graph-activity takes one or more arguments. Use ~help for examples.'
     )
   }
 
@@ -44,7 +46,7 @@ function parseGraphCommand(message, commandArguments) {
       graphActivity(message, paramString, serverActivityGraph)
       break;
     default:
-      message.channel.send(`${commandArguments[1]} is not a valid graph name.`)
+      message.channel.send(`Invalid argument name: ${commandArguments[1]} is not a valid graph name.`)
       break;
   }
 }

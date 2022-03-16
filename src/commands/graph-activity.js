@@ -69,6 +69,9 @@ function getDateOffsetFromParam(paramString) {
     case "past-hour":
       rangeOffset = ONE_MINUTE * 60
       break;
+    case "past-day":
+      rangeOffset = ONE_MINUTE * 60 * 24
+      break;
     case "past-week":
       rangeOffset = ONE_MINUTE * 60 * 168
       break;
