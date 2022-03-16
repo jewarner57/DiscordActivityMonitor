@@ -14,7 +14,7 @@
 
 
 ### Get Started
-* [Add the bot to your server using this link](https://discord.com/api/oauth2/authorize?client_id=720779074129231894&permissions=369306688&scope=bot)
+* [Add the bot to your server using this link](https://discord.com/api/oauth2/authorize?client_id=720779074129231894&permissions=278066293824&scope=bot)
 * You can invite the bot to any server that you administrate.
 
 
