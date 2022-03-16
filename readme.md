@@ -60,4 +60,5 @@
 * Here's a description of the data that this bot collects: 
   * IDs of users on a voice channel when activity is detected.
   * The server ID and channel ID
-  * A time stamp.
+  * A time stamp of when the activity was detected.
+  * Activity is detected only when a user joins or leaves a voice channel.
