@@ -20,4 +20,18 @@ function addActivity(id, data) {
         });
 }
 
-module.exports.addActivity = addActivity
+async function getActivitiesInDateRange(guildID, startDate, endDate) {
+  // get the activity data in the date range from the guild
+  // get the data sorted by date
+  const activityData = await Activity.find({
+    guildID: guildID,
+    created_at: {
+      $gt: startDate,
+      $lt: endDate
+    }
+  }).sort({ "created_at": 1 })
+
+  return activityData
+}
+
+module.exports = { addActivity, getActivitiesInDateRange }

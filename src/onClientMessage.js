@@ -1,4 +1,6 @@
 const { setRole, setHome, graphActivity } = require('./commands')
+const serverActivityGraph = require('./graph-generator/serverActivityGraph.js')
+const userActivityGraph = require('./graph-generator/userActivityGraph.js')
 
 function onClientMessage(message) {
     // if the message isnt meant for this bot then ignore it
@@ -18,15 +20,33 @@ function onClientMessage(message) {
         case '~sethome':
             setHome(message)
             break;
-        case '~graph-server-activity':
-            graphActivity(message, 'server-activity')
-            break;
-        case '~graph-user-activity':
-            graphActivity(message, 'user-activity')
+        case '~graph-activity':
+            parseGraphCommand(message, commandArguments)
             break;
         default:
             message.channel.send('Command Not Found.')
     }
+}
+
+function parseGraphCommand(message, commandArguments) {
+  const paramString = commandArguments.slice(2).join(' ')
+  if (commandArguments.length < 2) {
+    return message.channel.send(
+      'Invalid Command Format. ~graph-activity takes one or more arguments. Use ~help for examples.'
+    )
+  }
+
+  switch (commandArguments[1]) {
+    case 'users':
+      graphActivity(message, paramString, userActivityGraph)
+      break;
+    case 'server':
+      graphActivity(message, paramString, serverActivityGraph)
+      break;
+    default:
+      message.channel.send(`${commandArguments[1]} is not a valid graph name.`)
+      break;
+  }
 }
 
 exports.onClientMessage = onClientMessage

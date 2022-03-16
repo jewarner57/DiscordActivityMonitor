@@ -1,28 +1,18 @@
 const Activity = require('../models/activity');
-const serverActivityGraph = require('../graph-generator/serverActivityGraph.js')
-const userActivityGraph = require('../graph-generator/userActivityGraph.js')
+const { getActivitiesInDateRange } = require('../controllers/activity')
 const { MessageAttachment } = require('discord.js')
 const ED = require('@jewarner57/easydate')
 var svg2img = require('svg2img');
 
-async function graphActivity(message, graphType) {
-    const dateRange = message.content.substring(15).split(" to ")
-    const startDate = new Date(dateRange[0])
-    const endDate = new Date(dateRange[1])
+async function graphActivity(message, paramString, graphGenerator) {
+  
+    const { startDate, endDate } = parseDateRangeFromParam(paramString)
 
     if (foundErrorsInDates(message, startDate, endDate)) { return }
 
-    // get the activity data in the valid date range from the valid guild
-    // get the data sorted by date
     message.channel.send("Loading Activity Logs...")
-    const activityData = await Activity.find({
-        guildID: message.channel.guild.id,
-        created_at: {
-            $gt: startDate,
-            $lt: endDate
-        }
-    }).sort({ "created_at": 1 })
-
+    const guildID = message.channel.guild.id
+    activityData = await getActivitiesInDateRange(guildID, startDate, endDate)
 
     const startDateFormatString = new ED(startDate).format('%W, %B %d, %h:%I')
     const endDateFormatString = new ED(endDate).format('%W, %B %d, %h:%I')
@@ -39,13 +29,7 @@ async function graphActivity(message, graphType) {
     // pass the data to D3 to be processed into an SVG
     message.channel.send(`Drawing graph...`)
 
-    let svgString = ""
-    if (graphType === "server-activity") {
-      svgString = serverActivityGraph(activityData, startDate, endDate)
-    }
-    else {
-      svgString = await userActivityGraph(activityData, startDate, endDate, message) 
-    }
+    svgString = await graphGenerator(activityData, startDate, endDate, message)
     
     // Convert the svg string object to a buffer 
     svg2img(svgString, function (error, buffer) {
@@ -54,6 +38,52 @@ async function graphActivity(message, graphType) {
       message.channel.send('Graph Complete:')
       message.channel.send(file)
     });
+}
+
+function parseDateRangeFromParam(paramString) {
+  let startDate = NaN
+  let endDate = NaN
+  let rangeOffset = getDateOffsetFromParam(paramString) 
+
+  if(rangeOffset > 0) {
+    startDate = new Date(Date.now() - rangeOffset)
+    endDate = new Date()
+    return {startDate, endDate}
+  }
+
+  const dateRange = paramString.split(" to ")
+  if (dateRange.length >= 2) {
+    startDate = new Date(dateRange[0])
+    endDate = new Date(dateRange[1])
+  } 
+  return {startDate, endDate}
+}
+
+function getDateOffsetFromParam(paramString) {
+  let rangeOffset = 0
+  const ONE_MINUTE = 60000
+  switch (paramString) {
+    case "past-minute":
+      rangeOffset = ONE_MINUTE
+      break;
+    case "past-hour":
+      rangeOffset = ONE_MINUTE * 60
+      break;
+    case "past-week":
+      rangeOffset = ONE_MINUTE * 60 * 168
+      break;
+    case "past-month":
+      rangeOffset = ONE_MINUTE * 60 * 730
+      break;
+    case "past-year":
+      rangeOffset = ONE_MINUTE * 60 * 8760
+      break;
+    case "all-time":
+      rangeOffset = Date.now() 
+      break;
+  }
+
+  return rangeOffset
 }
 
 function foundErrorsInDates(message, startDate, endDate) {
