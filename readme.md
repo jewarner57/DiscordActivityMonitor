@@ -1,5 +1,7 @@
 ## Discord Voice Activity Monitor
 
+![logo image](./images/logo-background.png)
+
 ### Want to get pinged when the voice chat gets active? Look no further.
 
 <hr>
