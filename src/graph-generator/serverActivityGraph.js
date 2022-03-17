@@ -1,6 +1,7 @@
 const D3Node = require('d3-node')
 const ED = require('@jewarner57/easydate')
 
+
 function serverActivityGraph(data, startDate, endDate) {
     const d3n = new D3Node()
     const d3 = d3n.d3
@@ -141,8 +142,8 @@ function parseActivityData(data, startDate, endDate) {
   // add an empty point at the end date
   // so we keep the desired domain of the graph
   resultData.push({
-    count: 0,
-    userIDs: [],
+    count: resultData[resultData.length-1].count,
+    userIDs: [resultData[resultData.length - 1].userIDs],
     created_at: endDate
   }) 
 
