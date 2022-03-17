@@ -7,7 +7,7 @@
 <hr>
 
 ### What does this bot do?
-* The voice activity monitor sends a ping (to users who have opted in) when someone joins a voice chat channel alone.
+* The voice activity monitor pings users when someone joins a voice chat channel alone.
 * If you follow a server closely and never want to miss out on the action then this bot is for you.
 * If you follow a dead server that rarely has any action then this bot is also for you. Never miss out on the fun.
 * This voice activity monitor makes sure you always know when people are chilling in vc.
@@ -45,7 +45,7 @@
         * all-time
       * Example date range:
         * "Monday, March 14 16:00:00 2022 to Monday, March 14 19:00:00 2022"
-        * Time elements are parsed by the javascript date builtin. It can figure out most common date formats. It's best to provide it with a year in all cases.
+        * Date ranges are parsed by the javascript date builtin. It can figure out most common date formats. It's best to provide it with a year in all cases.
 
 * Example graphs with date range:
   <br>
