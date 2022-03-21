@@ -15,6 +15,7 @@ function onClientMessage(message) {
 
     switch (commandArguments[0]) {
         case '~help':
+            message.channel.send('Command help can be found here: github.com/jewarner57/DiscordActivityMonitor')
             break;
         case '~setrole':
             setRole(message)
@@ -25,10 +26,9 @@ function onClientMessage(message) {
         case '~graph-activity':
             parseGraphCommand(message, commandArguments)
             break;
-        case '~help':
-            message.channel.send('Command help can be found here: github.com/jewarner57/DiscordActivityMonitor')
         default:
             message.channel.send('Command Not Found.')
+            break;
     }
 }
 
