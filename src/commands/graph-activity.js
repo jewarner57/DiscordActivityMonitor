@@ -6,8 +6,9 @@ var svg2img = require('svg2img');
 
 async function graphActivity(message, paramString, graphGenerator) {
   
-    const { startDate, endDate } = parseDateRangeFromParam(paramString)
+    const { startDate, endDate, error } = parseDateRangeFromParam(paramString)
 
+    if (error) { return message.channel.send(error) }
     if (foundErrorsInDates(message, startDate, endDate)) { return }
 
     message.channel.send("Loading Activity Logs...")
@@ -48,15 +49,19 @@ function parseDateRangeFromParam(paramString) {
   if(rangeOffset > 0) {
     startDate = new Date(Date.now() - rangeOffset)
     endDate = new Date()
-    return {startDate, endDate}
+    return {startDate, endDate, error: null}
   }
 
   const dateRange = paramString.split(" to ")
   if (dateRange.length >= 2) {
     startDate = new Date(dateRange[0])
     endDate = new Date(dateRange[1])
+    return { startDate, endDate, error: null }
   } 
-  return {startDate, endDate}
+ 
+  if (rangeOffset === -1) {
+    return { startDate, endDate, error: `Invalid Date Range \"${paramString}\"` }
+  } 
 }
 
 function getDateOffsetFromParam(paramString) {
@@ -84,21 +89,26 @@ function getDateOffsetFromParam(paramString) {
     case "all-time":
       rangeOffset = Date.now() 
       break;
+    default:
+      rangeOffset = -1
   }
 
   return rangeOffset
 }
 
 function foundErrorsInDates(message, startDate, endDate) {
-    if (startDate > endDate) {
+    const startDateObj = new Date(startDate)
+    const endDateObj = new Date(endDate)
+
+    if (startDateObj > endDateObj) {
         message.channel.send("Start date must be before end date.")
         return true
     }
 
-    if (!startDate.isValid() || !endDate.isValid()) {
-        sendDateError(message, startDate, "Start")
-        sendDateError(message, endDate, "End")
-        return true
+    if (!startDateObj.isValid() || !endDateObj.isValid()) {
+      sendDateError(message, startDateObj, "Start")
+      sendDateError(message, endDateObj, "End")
+      return true
     }
     return false
 }
